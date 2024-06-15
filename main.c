@@ -22,6 +22,8 @@ void sortList(List *list);
 
 void randomList(List *list);
 
+void writeList(List *list, FILE *fptr);
+
 int main(int argc, char* argv[]){
     FILE *fptr;
     if (argc == 1) {
@@ -43,6 +45,7 @@ int main(int argc, char* argv[]){
             addListElement(list, data);
         }
     }
+    fclose(fptr);
 
     if (argc >= 3) {
         if (strcmp(argv[2], "-s") == 0) {
@@ -53,9 +56,17 @@ int main(int argc, char* argv[]){
         randomList(list);
     }
 
+    FILE *fptr_write;
+    fptr_write = fopen(argv[1], "w");
+    if (fptr_write == NULL) { 
+        printf("Error opening file write mode!\n");
+        exit(0);
+    }
+
+    writeList(list, fptr_write);
+
     printList(list);
 
-    fclose(fptr);
     freeList(list);
 
     return 0;
@@ -138,5 +149,11 @@ void randomList(List *list){
         strcpy(temp, list->array[swap_index]);
         strcpy(list->array[swap_index], list->array[i]);
         strcpy(list->array[i], temp);
+    }
+}
+
+void writeList(List *list, FILE *fptr){
+    for (int i=0; i<list->length; i++) {
+        fprintf(fptr, "%s", list->array[i]);
     }
 }
