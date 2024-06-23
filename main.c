@@ -24,14 +24,18 @@ void randomList(List *list);
 
 void writeList(List *list, FILE *fptr);
 
+void printHelp();
+
+void popList(List *list, int amount, FILE *fptr);
+
 int main(int argc, char* argv[]){
     FILE *fptr;
     if (argc == 1) {
-        // TODO: edit this
-        fptr = fopen("lists.txt", "r");
+        printHelp();
+        exit(0);
     }
     else {
-        fptr = fopen(argv[1], "r");
+        fptr = fopen(argv[argc-1], "r");
     }
 
     List *list = initList();
@@ -47,25 +51,36 @@ int main(int argc, char* argv[]){
     }
     fclose(fptr);
 
+    FILE *fptr_write;
+    fptr_write = fopen(argv[argc-1], "w");
+
+    if (fptr_write == NULL) { 
+        printf("Error opening file write mode!\n");
+        exit(0);
+    }
+
     if (argc >= 3) {
-        if (strcmp(argv[2], "-s") == 0) {
-            sortList(list);
+        for (int i=1; i<argc-1; i++) {
+            if (strcmp(argv[i], "-s") == 0) {
+                sortList(list);
+            }
+            if (strcmp(argv[i], "-p") == 0) {
+                popList(list, 100, fptr_write);
+                fclose(fptr_write);
+                freeList(list);
+                return 0;
+            }
         }
     }
     else {
         randomList(list);
     }
 
-    FILE *fptr_write;
-    fptr_write = fopen(argv[1], "w");
-    if (fptr_write == NULL) { 
-        printf("Error opening file write mode!\n");
-        exit(0);
-    }
-
     writeList(list, fptr_write);
 
     printList(list);
+
+    fclose(fptr_write);
 
     freeList(list);
 
@@ -155,5 +170,28 @@ void randomList(List *list){
 void writeList(List *list, FILE *fptr){
     for (int i=0; i<list->length; i++) {
         fprintf(fptr, "%s", list->array[i]);
+    }
+}
+
+void printHelp(){
+    printf("Usage: randomList [options] [file]\n");
+    printf("Example: randomList ./lists.txt ,this will shuffle list\n");
+    printf("Option:\n");
+    printf("    -s  this will sort list instead of shuffle");
+}
+
+void popList(List *list, int amount, FILE *fptr){
+    if (amount > list->length) {
+        printList(list);
+    }
+    else {
+        for (int i=0; i<list->length; i++) {
+            if (i<amount) {
+                printf("%s", list->array[i]);
+            }
+            else {
+                fprintf(fptr, "%s", list->array[i]);
+            }
+        }
     }
 }
