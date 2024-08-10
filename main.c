@@ -116,7 +116,7 @@ void addListElement(List *list, char* str){
     if(list->length == list->size){
         char** temp = list->array;
         list->size *= 2;
-        list->array = realloc(list, list->size*sizeof(char*));
+        list->array = realloc(list->array, list->size*sizeof(char*));
         if (list == NULL) {
             printf("out of memory\n");
             exit(0);
